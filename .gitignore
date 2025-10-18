@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment Variables (IMPORTANT - Contains passwords!)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# Build outputs
+build/
+dist/
+
+# Uploads (temporary files - should not be in git)
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+passenger.log
+stderr.log
+stdout.log
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Deployment
+deployment-package/
+*.zip
+*.tar.gz
+
+# Database
+*.sql.backup
+*.sql~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Optional npm cache
+.npm
+
+# MacOS
+.AppleDouble
+.LSOverride
+
