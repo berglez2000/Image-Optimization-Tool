@@ -66,6 +66,9 @@ export const imageAPI = {
   
   deleteFiles: (filenames) =>
     api.delete('/images/delete', { data: { filenames } }),
+  
+  getCapabilities: () =>
+    api.get('/images/capabilities'),
 };
 
 export default api;

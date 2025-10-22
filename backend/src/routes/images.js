@@ -41,5 +41,13 @@ router.delete(
   imageController.deleteFiles
 );
 
+// @route   GET /api/images/capabilities
+// @desc    Get format capabilities
+// @access  Public
+router.get(
+  '/capabilities',
+  imageController.getCapabilities
+);
+
 module.exports = router;
 

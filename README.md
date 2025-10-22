@@ -7,7 +7,7 @@ A powerful web-based image optimization tool built with React and Node.js. Optim
 - 🔐 **Secure Authentication** - User registration and login with JWT tokens
 - 📤 **Drag & Drop Upload** - Easy file upload with drag and drop support
 - 🎨 **Quality Control** - Adjustable quality slider (1-100) with visual guides
-- 🔄 **Format Conversion** - Convert to WebP, JPEG, or PNG
+- 🔄 **Format Conversion** - Convert to WebP, AVIF, JPEG, or PNG
 - 📏 **Auto-resize** - Automatically resize images wider than 1920px
 - 💾 **Storage Savings** - See exactly how much space you've saved
 - ⬇️ **Batch Download** - Download all optimized images as ZIP
@@ -151,7 +151,7 @@ The frontend will start on http://localhost:3000 and open automatically in your 
   - 🟢 90-100: Maximum quality
   - 🟡 70-90: Recommended (best balance)
   - 🔴 Below 70: High compression
-- **Format:** Choose WebP, JPEG, or PNG
+   - **Format:** Choose WebP, AVIF, JPEG, or PNG
 - **Auto-resize:** Images > 1920px width automatically resized
 
 ### 4. Process & Download
@@ -231,12 +231,12 @@ Image Optimization Tool/
 ### File Upload Limits
 - **Max file size:** 10MB per file
 - **Max files:** 20 files per batch
-- **Allowed formats:** JPEG, JPG, PNG, GIF, WebP
+- **Allowed formats:** JPEG, JPG, PNG, GIF, WebP, AVIF
 
 ### Image Processing
 - **Quality range:** 1-100 (default: 85)
 - **Max width:** 1920px (auto-resize if larger)
-- **Output formats:** WebP, JPEG, PNG
+- **Output formats:** WebP, AVIF, JPEG, PNG
 - **Metadata:** Stripped for smaller file size
 
 ### Security
@@ -274,6 +274,26 @@ rm -rf node_modules package-lock.json
 npm install --platform=darwin --arch=arm64 sharp
 npm install
 ```
+
+## 🆕 AVIF Format Support
+
+**AVIF (AV1 Image Format)** provides superior compression compared to WebP:
+- **20-30% smaller** files than WebP at similar quality
+- **Excellent** for modern browsers (Chrome 85+, Firefox 93+, Safari 16+)
+- **Slower encoding** but better compression
+- **Automatic fallback** if server doesn't support AVIF
+
+### AVIF Quality Guidelines
+- **Quality 60-75:** Equivalent to WebP 75-85
+- **Quality 75:** Recommended default for AVIF
+- **Quality 85+:** Minimal compression, larger files
+
+### Server Requirements
+- **Sharp 0.33+** with libheif support
+- **libheif** library installed on server
+- **cPanel:** May need `npm rebuild sharp` for AVIF support
+
+---
 
 ## 🔮 Future Enhancements (Phase 2)
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDropzone } from 'react-dropzone';
@@ -32,13 +32,32 @@ const Dashboard = () => {
   const [processing, setProcessing] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
+  const [capabilities, setCapabilities] = useState(null);
 
   const qualityInfo = getQualityDescription(quality);
+
+  // Load capabilities on component mount
+  useEffect(() => {
+    const loadCapabilities = async () => {
+      try {
+        const response = await imageAPI.getCapabilities();
+        setCapabilities(response.data.capabilities);
+      } catch (err) {
+        console.error('Failed to load capabilities:', err);
+        // Set default capabilities if API fails
+        setCapabilities({
+          formats: { webp: true, jpeg: true, png: true, avif: false },
+          supportedInputFormats: ['jpeg', 'jpg', 'png', 'gif', 'webp', 'avif']
+        });
+      }
+    };
+    loadCapabilities();
+  }, []);
 
   // Dropzone configuration
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp', '.avif']
     },
     maxFiles: 20,
     onDrop: (acceptedFiles, rejectedFiles) => {
@@ -69,6 +88,12 @@ const Dashboard = () => {
   const handleProcess = async () => {
     if (files.length === 0) {
       setError('Please select files to upload');
+      return;
+    }
+
+    // Check if AVIF is selected but not supported
+    if (format === 'avif' && !capabilities?.formats?.avif) {
+      setError('AVIF format is not supported on this server. Please choose WebP, JPEG, or PNG.');
       return;
     }
 
@@ -198,16 +223,39 @@ const Dashboard = () => {
                   onChange={(e) => setFormat(e.target.value)}
                 >
                   <option value="webp">WebP (Recommended)</option>
+                  <option value="avif" disabled={!capabilities?.formats?.avif}>
+                    AVIF {capabilities?.formats?.avif ? '(Smallest Size)' : '(Not Supported)'}
+                  </option>
                   <option value="jpeg">JPEG</option>
                   <option value="png">PNG</option>
                 </select>
 
-                {/* Additional Info */}
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-semibold text-blue-900 mb-2">Auto-resize enabled</h4>
-                  <p className="text-sm text-gray-700">
-                    Images wider than 1920px will be automatically resized while maintaining aspect ratio.
-                  </p>
+                {/* Format Information */}
+                <div className="mt-4 space-y-2">
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold text-blue-900 mb-1">Auto-resize enabled</h4>
+                    <p className="text-sm text-gray-700">
+                      Images wider than 1920px will be automatically resized while maintaining aspect ratio.
+                    </p>
+                  </div>
+                  
+                  {format === 'avif' && capabilities?.formats?.avif && (
+                    <div className="p-3 bg-purple-50 rounded-lg">
+                      <h4 className="font-semibold text-purple-900 mb-1">🆕 AVIF Format</h4>
+                      <p className="text-sm text-gray-700">
+                        AVIF provides 20-30% smaller files than WebP. Great for modern browsers!
+                      </p>
+                    </div>
+                  )}
+                  
+                  {format === 'avif' && !capabilities?.formats?.avif && (
+                    <div className="p-3 bg-red-50 rounded-lg">
+                      <h4 className="font-semibold text-red-900 mb-1">⚠️ AVIF Not Supported</h4>
+                      <p className="text-sm text-gray-700">
+                        This server doesn't support AVIF encoding. Please choose WebP, JPEG, or PNG.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -243,7 +291,7 @@ const Dashboard = () => {
                     </p>
                     <p className="text-gray-400 group-hover:text-gray-800 transition-colors">or click to select files</p>
                     <p className="text-sm text-gray-400 group-hover:text-gray-600 transition-colors mt-4">
-                      Max 10MB per file • Up to 20 files • JPEG, PNG, GIF, WebP
+                      Max 10MB per file • Up to 20 files • JPEG, PNG, GIF, WebP, AVIF
                     </p>
                   </>
                 )}

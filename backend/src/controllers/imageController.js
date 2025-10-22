@@ -26,11 +26,11 @@ exports.processImages = async (req, res) => {
     }
 
     // Validate format
-    const allowedFormats = ['webp', 'jpeg', 'jpg', 'png'];
+    const allowedFormats = ['webp', 'jpeg', 'jpg', 'png', 'avif'];
     if (!allowedFormats.includes(format.toLowerCase())) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid format. Allowed: webp, jpeg, png'
+        message: 'Invalid format. Allowed: webp, jpeg, png, avif'
       });
     }
 
@@ -291,6 +291,29 @@ exports.deleteFiles = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to delete files'
+    });
+  }
+};
+
+// Get format capabilities
+exports.getCapabilities = async (req, res) => {
+  try {
+    const capabilities = imageProcessor.getFormatCapabilities();
+    
+    res.json({
+      success: true,
+      capabilities: {
+        formats: capabilities,
+        maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 10485760,
+        maxFiles: parseInt(process.env.MAX_FILES) || 20,
+        supportedInputFormats: ['jpeg', 'jpg', 'png', 'gif', 'webp', 'avif']
+      }
+    });
+  } catch (error) {
+    console.error('Get capabilities error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get capabilities'
     });
   }
 };

@@ -38,7 +38,7 @@ export const getQualityDescription = (quality) => {
 
 // Validate file type
 export const isValidImageFile = (file) => {
-  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
   return validTypes.includes(file.type);
 };
 

@@ -2,6 +2,22 @@ const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs').promises;
 
+// Check AVIF support at startup
+const checkAVIFSupport = () => {
+  try {
+    // Test if AVIF format is available
+    const avifSupported = sharp.format.avif && sharp.format.avif.output;
+    console.log(`🖼️  AVIF support: ${avifSupported ? '✅ Available' : '❌ Not available'}`);
+    return avifSupported;
+  } catch (error) {
+    console.log('❌ AVIF support check failed:', error.message);
+    return false;
+  }
+};
+
+// Cache AVIF support status
+const AVIF_SUPPORTED = checkAVIFSupport();
+
 class ImageProcessor {
   /**
    * Process a single image
@@ -67,6 +83,16 @@ class ImageProcessor {
           pipeline = pipeline.png({ 
             quality: parseInt(quality),
             compressionLevel: 9
+          });
+          break;
+        case 'avif':
+          if (!AVIF_SUPPORTED) {
+            throw new Error('AVIF format not supported on this server. Please use WebP, JPEG, or PNG.');
+          }
+          pipeline = pipeline.avif({ 
+            quality: parseInt(quality),
+            effort: 4, // Compression effort (0-6, higher = smaller but slower)
+            chromaSubsampling: '4:2:0' // Better compression
           });
           break;
         default:
@@ -165,6 +191,19 @@ class ImageProcessor {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  /**
+   * Get supported format capabilities
+   * @returns {Object} - Format support status
+   */
+  getFormatCapabilities() {
+    return {
+      webp: true, // Always supported
+      jpeg: true, // Always supported
+      png: true,  // Always supported
+      avif: AVIF_SUPPORTED
+    };
   }
 }
 
